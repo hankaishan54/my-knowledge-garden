@@ -7,6 +7,10 @@ module.exports = {
       options: {
         skipHtmlTags: { "[-]": ["pre"] },
       },
+      svg: {
+        // 每个公式只内联它自己用到的字形，避免整站构建时内存与产物体积爆炸
+        fontCache: "local",
+      },
     });
 
     // mathjax-full 3.2.2 throws on characters outside its operator
