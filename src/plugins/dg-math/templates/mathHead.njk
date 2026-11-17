@@ -7,10 +7,13 @@
       processEscapes: true,
       macros: {}
     },
-    svg: { fontCache: 'local' },
+    // 全局字形缓存：整页只存一份字形，公式多（真题集动辄上千个）时体积和渲染时间都小得多
+    svg: { fontCache: 'global' },
     options: {
       skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'a'],
-      ignoreHtmlClass: 'tex2jax_ignore'
+      ignoreHtmlClass: 'tex2jax_ignore',
+      // 公式多的长页面分段排版，避免一次性阻塞主线程
+      enableMenu: false
     }
   };
 </script>
