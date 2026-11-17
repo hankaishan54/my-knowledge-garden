@@ -860,7 +860,28 @@ module.exports = function(eleventyConfig) {
     }
   });
   eleventyConfig.addWatchTarget(FAVICON_SOURCE);
-  eleventyConfig.addPlugin(faviconsPlugin, { outputDir: "dist" });
+  // favicons 短代码在每页并行渲染时会被并发调用，同一批图标被重复写/拷贝，
+  // 撞上 Windows 文件锁（EBUSY）就会让整个构建偶发失败。这里串行化并按参数记忆，
+  // 同一份图标只真正生成一次。
+  {
+    let chain = Promise.resolve();
+    const memo = new Map();
+    faviconsPlugin(
+      {
+        addAsyncShortcode(name, fn) {
+          eleventyConfig.addAsyncShortcode(name, (...args) => {
+            const key = JSON.stringify(args);
+            if (memo.has(key)) return memo.get(key);
+            const run = chain.then(() => fn(...args));
+            chain = run.catch(() => {});
+            memo.set(key, run);
+            return run;
+          });
+        },
+      },
+      { outputDir: "dist" },
+    );
+  }
   eleventyConfig.addPlugin(tocPlugin, {
     ul: true,
     tags: ["h1", "h2", "h3", "h4", "h5", "h6"],
