@@ -1,0 +1,17 @@
+{# MathJax 浏览器端渲染：自托管脚本，不走 CDN #}
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]']],
+      processEscapes: true,
+      macros: {}
+    },
+    svg: { fontCache: 'local' },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'a'],
+      ignoreHtmlClass: 'tex2jax_ignore'
+    }
+  };
+</script>
+<script defer src="/js/tex-svg-full.js"></script>
