@@ -91,7 +91,13 @@ const sortTree = (unsorted, navigationOrder, currentPath) => {
 };
 
 function getPermalinkMeta(note, key) {
-  let permalink = "/";
+  // Eleventy 3 解析完 permalink 后会把它从 data 级联里清掉，集合项上只剩
+  // note.url（真实页面地址）。早期版本只读 data.permalink，取值落空后回落到
+  // 默认的 "/"，导致目录树里每一篇笔记的链接都指向首页。这里以 note.url 为准。
+  let permalink =
+    typeof note.data.permalink === "string" && note.data.permalink !== ""
+      ? note.data.permalink
+      : note.url || "/";
   let parts = note.filePathStem.split("/");
   let name = parts[parts.length - 1];
   let noteIcon = process.env.NOTE_ICON_DEFAULT;
@@ -99,12 +105,9 @@ function getPermalinkMeta(note, key) {
   let pinned = false;
   let folders = null;
   try {
-    if (note.data.permalink) {
-      permalink = note.data.permalink;
-    }
     if (note.data.tags && note.data.tags.indexOf("gardenEntry") != -1) {
       permalink = "/";
-    }    
+    }
     if (note.data.title) {
       name = note.data.title;
     }
